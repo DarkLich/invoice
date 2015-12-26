@@ -1,0 +1,6 @@
+*~
+*.iml
+.idea/
+public/.sass-cache
+node_modules
+public/stylesheets/*.css
