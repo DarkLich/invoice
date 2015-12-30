@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  h4 Создать категорию
+  if error
+    h4(style="color: red")= error
+  .container-fluid
+    form#create_invoice.form-horizontal(action='/invoice/create' method='post')
+      .form-group
+        label.col-md-2.col-md-offset-1.control-label Газ
+        .col-md-2
+          select.form-control(name='kind')
+            option(value='Еда') Еда
+            option(value='Развлечения') Развлечения
+            option(value='Другое') Другое
+      .form-group
+        label.col-md-2.col-md-offset-1.control-label Наименование
+        .col-md-2
+          input.form-control.category-title(name='title', type='text', data-provide="typeahead", autocomplete="off")
+      .form-group
+        button.col-md-2.col-md-offset-1.btn.btn-success.submit-button(type='submit') Отправить
+        a.col-md-2.col-md-offset-3.btn.btn-success.next-button.absent(href='/category/create') Далее
