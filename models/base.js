@@ -224,6 +224,13 @@ function getLastTariff(req, res, next) {
   });
 }
 
+function getAllInvoices(req, res, next) {
+
+  res.locals.allInvoices = {blabla: '222asdasd'};
+  next();
+}
+
 module.exports = connection;
 module.exports.addTariff = addTariff;
 module.exports.getLastTariff = getLastTariff;
+module.exports.getAllInvoices = getAllInvoices;
