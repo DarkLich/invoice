@@ -17,7 +17,14 @@ router.get('/create', base.getLastTariff, function(req, res, next) {
 
 router.get('/all', base.getAllInvoices, function(req, res, next) {
   //console.log (req, res, next)
-  //console.log ('90909090', res.locals.lastBills)
+  console.log ('90909090', res.locals.lastBills)
+  res.render('invoices');
+});
+
+router.get('/show/:invoice_id', base.getAllInvoices, function(req, res, next) {
+  console.log('77777777777', req.params.invoice_id)
+  //console.log (req, res, next)
+  console.log ('90909090', res.locals.lastBills)
   res.render('invoices');
 });
 

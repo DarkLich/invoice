@@ -2,4 +2,6 @@ extends layout
 
 block content
   .container-fluid
-    p #{allInvoices[0].blabla}
+    each val, index in allInvoices
+      li= index + ': ' + val
+      a.invoice-detail(href="/invoice/show/" + val.id) #{val.title} #{val.created_at}

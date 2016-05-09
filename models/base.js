@@ -1,5 +1,6 @@
 var mysql = require('mysql');
 var _ = require('lodash');
+var moment = require('moment');
 
 var connection = mysql.createConnection({
   host     : 'localhost',
@@ -54,7 +55,7 @@ function fillTariffTypes() {
 }
 
 var query = connection.query('CREATE TABLE IF NOT EXISTS bills (id INT(11) NOT NULL AUTO_INCREMENT, tariff_id INT(11), ' +
-    'invoice_id INT(11), counter_prev FLOAT, counter_next FLOAT, tariff_rate FLOAT, tariff_value FLOAT, tariff2_rate FLOAT, tariff2_value FLOAT, PRIMARY KEY(id))', function(err, rows, fields) {
+    'invoice_id INT(11), counter_prev FLOAT, counter_next FLOAT, tariff_rate FLOAT, tariff_value FLOAT, tariff2_rate FLOAT, tariff2_value FLOAT, cost FLOAT, PRIMARY KEY(id))', function(err, rows, fields) {
   console.log('query.sql', query.sql)
   if (err) throw err;
 
@@ -62,7 +63,7 @@ var query = connection.query('CREATE TABLE IF NOT EXISTS bills (id INT(11) NOT N
 });
 
 var query = connection.query('CREATE TABLE IF NOT EXISTS invoices (id INT(11) NOT NULL AUTO_INCREMENT, ' +
-    'created_at TIMESTAMP, total FLOAT, PRIMARY KEY(id))', function(err, rows, fields) {
+    'created_at TIMESTAMP, counted_at TIMESTAMP, title VARCHAR(100), total FLOAT, PRIMARY KEY(id))', function(err, rows, fields) {
   console.log('query.sql', query.sql)
   if (err) throw err;
   fillFirstInvoice()
@@ -71,7 +72,9 @@ var query = connection.query('CREATE TABLE IF NOT EXISTS invoices (id INT(11) NO
 
 function fillFirstInvoice() {
   var invoice = {
-    total: 0
+    total: 0,
+    title: "2016.01.01",
+    counted_at: moment('2015-12-01').format("YYYY-MM-DD HH:mm:ss")
   };
   var bills = [
     {
@@ -79,13 +82,15 @@ function fillFirstInvoice() {
       invoice_id: 1,
       counter_prev: 64,
       counter_next: 81,
-      tariff_rate: 9.684
+      tariff_rate: 9.684,
+      cost: 164.63
     },{
       tariff_id: 2,
       invoice_id: 1,
       counter_prev: 1310,
       counter_next: 1383,
-      tariff_rate: 7.188
+      tariff_rate: 7.188,
+      cost: 524.72
     },{
       tariff_id: 3,
       invoice_id: 1,
@@ -93,23 +98,28 @@ function fillFirstInvoice() {
       counter_next: 7209,
       tariff_rate: 0.456,
       tariff_value: 100,
-      tariff2_rate: 0.789
+      tariff2_rate: 0.789,
+      cost: 300.45
     },{
       tariff_id: 4,
       invoice_id: 1,
-      tariff_rate: 477.6
+      tariff_rate: 477.6,
+      cost: 477.6
     },{
       tariff_id: 5,
       invoice_id: 1,
-      tariff_rate: 50
+      tariff_rate: 50,
+      cost: 50
     },{
       tariff_id: 6,
       invoice_id: 1,
-      tariff_rate: 55
+      tariff_rate: 55,
+      cost: 55
     },{
       tariff_id: 7,
       invoice_id: 1,
-      tariff_rate: 0
+      tariff_rate: 0,
+      cost: 400
     }
   ]
   connection.query('SELECT COUNT(*) AS solution FROM invoices', function(err, rows, fields) {
@@ -225,9 +235,11 @@ function getLastTariff(req, res, next) {
 }
 
 function getAllInvoices(req, res, next) {
-
-  res.locals.allInvoices = {blabla: '222asdasd'};
-  next();
+  connection.query('SELECT * FROM invoices ORDER BY id DESC', function(err, rows, fields) {
+    console.log('bbbbbbbbbbb', rows)
+    res.locals.allInvoices = rows;
+    next();
+  })
 }
 
 module.exports = connection;
