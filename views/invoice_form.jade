@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  h4 Создать категорию
+  h4 Создать счет
   if error
     h4(style="color: red")= error
   .container-fluid
@@ -23,87 +23,98 @@ block content
       //      input.form-control.category-title(name='gas_next', type='text', autocomplete="off")
       //    td
       //      input.form-control.category-title(name='gas_tariff', type='text', autocomplete="off")
+      label.col-md-offset-1 Информация о счете
+      .form-group
+        .row
+          label.col-md-1.col-md-offset-0.control-label Название
+          .col-md-3
+            input.form-control.category-title(name='invoice.title', type='text', autocomplete="off", value="За #{moment().subtract(1, 'months').format('YYYY-MM')}")
 
+          label.col-md-1.col-md-offset-0.control-label Показатели на
+          .col-md-2
+            input.form-control.category-title(name='invoice.counted_at', type='date', autocomplete="off", value="#{moment().format('YYYY-MM-DD')}")
+
+      label.col-md-offset-1 Газ
       .form-group
         .row
           label.col-md-1.col-md-offset-0.control-label Предыдущий показатель
           .col-md-1
-            input.form-control.category-title(name='gas.counter_prev', type='text', autocomplete="off", value="#{lastBills.gas.counter_next}")
+            input.form-control.category-title(name='bill.gas.counter_prev', type='text', autocomplete="off", value="#{lastBills.gas.counter_next}")
 
           label.col-md-1.control-label Текущий показатель
           .col-md-1
-            input.form-control.category-title(name='gas.counter_next', type='text', autocomplete="off")
+            input.form-control.category-title(name='bill.gas.counter_next', type='text', autocomplete="off")
 
           label.col-md-1.col-md-offset-0.control-label Тариф
           .col-md-1
-            input.form-control.category-title(name='gas.tariff_rate', type='text', autocomplete="off", value="#{lastBills.gas.tariff_rate}")
+            input.form-control.category-title(name='bill.gas.tariff_rate', type='text', autocomplete="off", value="#{lastBills.gas.tariff_rate}")
 
       label.col-md-offset-1 Вода
       .form-group
         .row
           label.col-md-1.col-md-offset-0.control-label Предыдущий показатель
           .col-md-1
-            input.form-control.category-title(name='water.counter_prev', type='text', autocomplete="off", value="#{lastBills.water.counter_next}")
+            input.form-control.category-title(name='bill.water.counter_prev', type='text', autocomplete="off", value="#{lastBills.water.counter_next}")
 
           label.col-md-1.control-label Текущий показатель
           .col-md-1
-            input.form-control.category-title(name='water.counter_next', type='text', autocomplete="off")
+            input.form-control.category-title(name='bill.water.counter_next', type='text', autocomplete="off")
 
           label.col-md-1.col-md-offset-0.control-label Тариф
           .col-md-1
-            input.form-control.category-title(name='water.tariff_rate', type='text', autocomplete="off", value="#{lastBills.water.tariff_rate}")
+            input.form-control.category-title(name='bill.water.tariff_rate', type='text', autocomplete="off", value="#{lastBills.water.tariff_rate}")
 
       label.col-md-offset-1 Свет
       .form-group
         .row
           label.col-md-1.col-md-offset-0.control-label Предыдущий показатель
           .col-md-1
-            input.form-control.category-title(name='electricity.counter_prev', type='text', autocomplete="off", value="#{lastBills.electricity.counter_next}")
+            input.form-control.category-title(name='bill.electricity.counter_prev', type='text', autocomplete="off", value="#{lastBills.electricity.counter_next}")
 
           label.col-md-1.control-label Текущий показатель
           .col-md-1
-            input.form-control.category-title(name='electricity.counter_next', type='text', autocomplete="off")
+            input.form-control.category-title(name='bill.electricity.counter_next', type='text', autocomplete="off")
 
 
           label.col-md-1.col-md-offset-0.control-label Тариф
           .col-md-1
-            input.form-control.category-title(name='electricity.tariff_rate', type='text', autocomplete="off", value="#{lastBills.electricity.tariff_rate}")
+            input.form-control.category-title(name='bill.electricity.tariff_rate', type='text', autocomplete="off", value="#{lastBills.electricity.tariff_rate}")
 
           label.col-md-1.col-md-offset-0.control-label Лимит 1
           .col-md-1
-            input.form-control.category-title(name='electricity.tariff_value', type='text', autocomplete="off", value="#{lastBills.electricity.tariff_value}")
+            input.form-control.category-title(name='bill.electricity.tariff_value', type='text', autocomplete="off", value="#{lastBills.electricity.tariff_value}")
 
           label.col-md-1.col-md-offset-0.control-label Тариф 2
           .col-md-1
-            input.form-control.category-title(name='electricity.tariff2_rate', type='text', autocomplete="off", value="#{lastBills.electricity.tariff2_rate}")
+            input.form-control.category-title(name='bill.electricity.tariff2_rate', type='text', autocomplete="off", value="#{lastBills.electricity.tariff2_rate}")
 
       label.col-md-offset-1 ЖРЕП
       .form-group
         .row
           label.col-md-1.col-md-offset-0.control-label Тариф
           .col-md-1
-            input.form-control.category-title(name='communal.tariff_rate', type='text', autocomplete="off", value="#{lastBills.communal.tariff_rate}")
+            input.form-control.category-title(name='bill.communal.tariff_rate', type='text', autocomplete="off", value="#{lastBills.communal.tariff_rate}")
 
       label.col-md-offset-1 Тепло
       .form-group
         .row
           label.col-md-1.col-md-offset-0.control-label Тариф
           .col-md-1
-            input.form-control.category-title(name='heat.tariff_rate', type='text', autocomplete="off", value="#{lastBills.heat.tariff_rate}")
+            input.form-control.category-title(name='bill.heat.tariff_rate', type='text', autocomplete="off", value="#{lastBills.heat.tariff_rate}")
 
       label.col-md-offset-1 Интернет
       .form-group
         .row
           label.col-md-1.col-md-offset-0.control-label Тариф
           .col-md-1
-            input.form-control.category-title(name='internet.tariff_rate', type='text', autocomplete="off", value="#{lastBills.internet.tariff_rate}")
+            input.form-control.category-title(name='bill.internet.tariff_rate', type='text', autocomplete="off", value="#{lastBills.internet.tariff_rate}")
 
       label.col-md-offset-1 Гараж
       .form-group
         .row
           label.col-md-1.col-md-offset-0.control-label Тариф
           .col-md-1
-            input.form-control.category-title(name='garage.tariff_rate', type='text', autocomplete="off", value="#{lastBills.garage.tariff_rate}")
+            input.form-control.category-title(name='bill.garage.tariff_rate', type='text', autocomplete="off", value="#{lastBills.garage.tariff_rate}")
 
 
       .form-group

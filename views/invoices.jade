@@ -2,6 +2,22 @@ extends layout
 
 block content
   .container-fluid
-    each val, index in allInvoices
-      li= index + ': ' + val
-      a.invoice-detail(href="/invoice/show/" + val.id) #{val.title} #{val.created_at}
+    .invoices-list
+      each val, index in allInvoices
+        div
+          a.invoice-detail(href="/invoice/show/" + val.id) #{val.title} #{val.created_at}
+    .invoice-info
+      if _.size(curr_invoice)
+        div
+          span title
+          span= curr_invoice.title
+        div
+          span total
+          span= curr_invoice.total
+      if _.size(invoiceInfo)
+        each val, index in invoiceInfo
+          div
+            span= val.name
+            span= val.cost
+      else
+        a zzzzzzzzzz

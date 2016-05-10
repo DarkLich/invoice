@@ -60,5 +60,7 @@ app.use(function(err, req, res, next) {
   });
 });
 
+app.locals._ = require('lodash');
+app.locals.moment = require('moment');
 
 module.exports = app;

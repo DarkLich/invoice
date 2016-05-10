@@ -1,6 +1,7 @@
 var mysql = require('mysql');
 var _ = require('lodash');
 var moment = require('moment');
+var accounting = require('accounting');
 
 var connection = mysql.createConnection({
   host     : 'localhost',
@@ -19,6 +20,10 @@ var tarifs = [
   {id: 7, name: 'garage', type: 'static', units: 'мес', printable: 0, system_id: '35'}
 ];
 
+function convertToNumber (val) {
+  return isNaN(parseFloat(val)) ? 0 : parseFloat(val);
+}
+
 function objectToQuery(obj) {
   if (!_.isArray(obj)) {
     obj = [obj]
@@ -33,21 +38,21 @@ function objectToQuery(obj) {
 
 connection.query('CREATE TABLE IF NOT EXISTS tariff_types (id INT(11) NOT NULL AUTO_INCREMENT, name VARCHAR(50), type VARCHAR(50), units VARCHAR(50), system_id VARCHAR(50), printable BOOL DEFAULT 0, PRIMARY KEY(id))', function(err, rows, fields) {
   if (err) throw err;
-  console.log('The solution is111: ', rows , fields);
+  //console.log('The solution is111: ', rows , fields);
   fillTariffTypes();
 });
 
 function fillTariffTypes() {
   connection.query('SELECT COUNT(*) AS solution FROM tariff_types', function(err, rows, fields) {
     if (err) throw err;
-    console.log (err, rows, fields)
+    //console.log (err, rows, fields)
     if (rows[0].solution === 0) {
       var obj = objectToQuery(tarifs);
       var query = connection.query('INSERT INTO tariff_types (??) VALUES ?', [obj.keys, obj.vals], function(err, rows, fields) {
         if (err) throw err;
-        console.log('The solution is: ', rows ,rows[0], fields);
+        //console.log('The solution is: ', rows ,rows[0], fields);
       });
-      console.log('query.sql', query.sql)
+      //console.log('query.sql', query.sql)
     }
     //connection.end();
   });
@@ -56,18 +61,18 @@ function fillTariffTypes() {
 
 var query = connection.query('CREATE TABLE IF NOT EXISTS bills (id INT(11) NOT NULL AUTO_INCREMENT, tariff_id INT(11), ' +
     'invoice_id INT(11), counter_prev FLOAT, counter_next FLOAT, tariff_rate FLOAT, tariff_value FLOAT, tariff2_rate FLOAT, tariff2_value FLOAT, cost FLOAT, PRIMARY KEY(id))', function(err, rows, fields) {
-  console.log('query.sql', query.sql)
+  //console.log('query.sql', query.sql)
   if (err) throw err;
 
-  console.log('The solution is: ', rows ,rows[0]);
+  //console.log('The solution is: ', rows ,rows[0]);
 });
 
 var query = connection.query('CREATE TABLE IF NOT EXISTS invoices (id INT(11) NOT NULL AUTO_INCREMENT, ' +
     'created_at TIMESTAMP, counted_at TIMESTAMP, title VARCHAR(100), total FLOAT, PRIMARY KEY(id))', function(err, rows, fields) {
-  console.log('query.sql', query.sql)
+  //console.log('query.sql', query.sql)
   if (err) throw err;
   fillFirstInvoice()
-  console.log('The solution is: ', rows ,rows[0]);
+  //console.log('The solution is: ', rows ,rows[0]);
 });
 
 function fillFirstInvoice() {
@@ -145,30 +150,33 @@ function fillFirstInvoice() {
 }
 
 function addTariff(req, res, next) {
-  var requiredFields = {
-    'gas.counter_prev': true,
-    'gas.counter_next': true,
-    'gas.tariff_rate': true,
-    'water.counter_prev': true,
-    'water.counter_next': true,
-    'water.tariff_rate': true,
-    'electricity.counter_prev': true,
-    'electricity.counter_next': true,
-    'electricity.tariff_rate': true,
-    'electricity.tariff_value': true,
-    'electricity.tariff2_rate': true,
-    'communal.tariff_rate': true,
-    'heat.tariff_rate': true
+  var invoiceRequiredFields = {
+
+  }
+  var billRequiredFields = {
+    'invoice.title': true,
+    'invoice.counted_at': true,
+    'bill.gas.counter_prev': true,
+    'bill.gas.counter_next': true,
+    'bill.gas.tariff_rate': true,
+    'bill.water.counter_prev': true,
+    'bill.water.counter_next': true,
+    'bill.water.tariff_rate': true,
+    'bill.electricity.counter_prev': true,
+    'bill.electricity.counter_next': true,
+    'bill.electricity.tariff_rate': true,
+    'bill.electricity.tariff_value': true,
+    'bill.electricity.tariff2_rate': true,
+    'bill.communal.tariff_rate': true,
+    'bill.heat.tariff_rate': true
   }
 
   if (req.body && _.size(req.body) > 0) {
-    console.log(req.body)
     var form = req.body
-    var form_bills = {}
+    var form_parts = {}
     var state = {};
     _.each(form, function(val, key){
-      console.log ('654', key, requiredFields[key], requiredFields[key] && val === '', val)
-      if (requiredFields[key] && (val === '' || val === 'null')) {
+      if (billRequiredFields[key] && (val === '' || val === 'null')) {
         if (val === '') {
           state[key] = 'empty'
         }
@@ -177,26 +185,52 @@ function addTariff(req, res, next) {
         }
         //throw new Error('oh no!');
       } else {
-
-        var k = key.match(/^(\w+)\.(\w+)/);
-        console.log('k', k)
-        if (_.isUndefined(form_bills[k[1]])) form_bills[k[1]] = {}
-        form_bills[k[1]][k[2]] = val
-
+        var k = key.match(/^(\w+)\.(.+)/);
+        if (_.isUndefined(form_parts[k[1]])) form_parts[k[1]] = {}
+        form_parts[k[1]][k[2]] = val
       }
+    });
+    var form_invoice = form_parts.invoice;
+
+    var form_bills = {};
+    _.each(form_parts.bill, function(val, key){
+      var k = key.match(/^(\w+)\.(\w+)/);
+      if (_.isUndefined(form_bills[k[1]])) form_bills[k[1]] = {}
+      form_bills[k[1]][k[2]] = val
     })
+
+    var total = 0;
+    _.each(form_bills, function(val,key){
+      var cost = 0;
+      var counter_diff = 1;
+      if (!_.isEmpty(val.counter_prev) && !_.isEmpty(val.counter_next)) {
+        counter_diff = convertToNumber(val.counter_next) - convertToNumber(val.counter_prev);
+      }
+      if (!_.isEmpty(val.tariff_value) && !_.isEmpty(val.tariff2_rate)) {
+        var tarif2_value = counter_diff - convertToNumber(val.tariff_value);
+        if (tarif2_value > 0) {
+          counter_diff -= tarif2_value;
+          cost += tarif2_cost * convertToNumber(val.tariff2_rate);
+        }
+      }
+      if (!_.isEmpty(val.tariff_rate)) {
+        cost += convertToNumber(val.tariff_rate) * counter_diff
+      }
+      val.cost = accounting.toFixed(cost, 2);
+      total += convertToNumber(val.cost);
+    });
+    form_invoice.total = accounting.toFixed(total, 2);
     if (_.isEmpty(state)) {
-      var obj = objectToQuery({total: 0});
+      var obj = objectToQuery(form_invoice);
       var query = connection.query('INSERT INTO invoices (??) VALUES ?', [obj.keys, obj.vals], function (err, rows, fields) {
         if (err) throw err;
         var invoice_id = rows.insertId;
         _.each(form_bills, function (bill, key) {
-          var tariff = _.find(tarifs, {name: key})
-          if (_.isUndefined(bill.tariff_id)) bill.tariff_id = tariff.id
-          if (_.isUndefined(bill.invoice_id)) bill.invoice_id = invoice_id
+          var tariff = _.find(tarifs, {name: key});
+          if (_.isUndefined(bill.tariff_id)) bill.tariff_id = tariff.id;
+          if (_.isUndefined(bill.invoice_id)) bill.invoice_id = invoice_id;
         });
         var new_bills = _.values(form_bills)
-        console.log(form_bills)
         _.each(new_bills, function (bill) {
           var obj_bill = objectToQuery(bill);
           var query = connection.query('INSERT INTO bills (??) VALUES ?', [obj_bill.keys, obj_bill.vals], function (err, rows, fields) {
@@ -209,10 +243,9 @@ function addTariff(req, res, next) {
       })
     } else {
       console.log('error', state);
-      throw new Error('Пустые поля');
-
+      res.locals.errors = state;
+      next()
     }
-
   }
 }
 
@@ -235,9 +268,20 @@ function getLastTariff(req, res, next) {
 }
 
 function getAllInvoices(req, res, next) {
+  var id = parseInt(req.params.invoice_id);
   connection.query('SELECT * FROM invoices ORDER BY id DESC', function(err, rows, fields) {
-    console.log('bbbbbbbbbbb', rows)
     res.locals.allInvoices = rows;
+    if (id) {
+      res.locals.curr_invoice = _.find(rows, {id: id})
+    }
+    next();
+  })
+}
+
+function getInvoice(req, res, next) {
+  var id = req.params.invoice_id
+  connection.query('SELECT * FROM bills LEFT JOIN tariff_types ON bills.tariff_id = tariff_types.id WHERE bills.invoice_id = ' + id, function(err, rows, fields) {
+    res.locals.invoiceInfo = rows;
     next();
   })
 }
@@ -246,3 +290,4 @@ module.exports = connection;
 module.exports.addTariff = addTariff;
 module.exports.getLastTariff = getLastTariff;
 module.exports.getAllInvoices = getAllInvoices;
+module.exports.getInvoice = getInvoice;

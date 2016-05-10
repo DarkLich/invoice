@@ -21,7 +21,7 @@ router.get('/all', base.getAllInvoices, function(req, res, next) {
   res.render('invoices');
 });
 
-router.get('/show/:invoice_id', base.getAllInvoices, function(req, res, next) {
+router.get('/show/:invoice_id', base.getAllInvoices, base.getInvoice, function(req, res, next) {
   console.log('77777777777', req.params.invoice_id)
   //console.log (req, res, next)
   console.log ('90909090', res.locals.lastBills)
@@ -29,7 +29,16 @@ router.get('/show/:invoice_id', base.getAllInvoices, function(req, res, next) {
 });
 
 router.post('/create', base.addTariff, function (req, res, next) {
-  res.send(res.body)
+  //res.render('invoice_form');
+  //res.send({aaaa: res.body})
+  console.log ('11111', res)
+  if (res.locals.errors) {
+    res.json(res.locals.errors);
+  } else {
+    res.json({state: 'ok'});
+  }
+  //res.json(res.error);
+  //res.end("yes");
 });
 
 module.exports = router;
