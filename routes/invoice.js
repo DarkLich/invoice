@@ -6,7 +6,7 @@ var base = require('../models/base');
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-  res.render('invoice_form', { title: 'Express' });
+  res.redirect('/invoice/create');
 });
 
 router.get('/create', base.getLastTariff, function(req, res, next) {

@@ -4,6 +4,7 @@ block content
   h4 Создать счет
   if error
     h4(style="color: red")= error
+  .error-container(style="color: red;")
   .container-fluid
     form#create_invoice.form-horizontal(action='/invoice/create' method='post')
       //table.table
@@ -49,6 +50,10 @@ block content
           .col-md-1
             input.form-control.category-title(name='bill.gas.tariff_rate', type='text', autocomplete="off", value="#{lastBills.gas.tariff_rate}")
 
+          label.col-md-1.col-md-offset-4.control-label Сума
+          .col-md-1
+            input.form-control.category-title(name='bill.gas.cost', type='text', autocomplete="off")
+
       label.col-md-offset-1 Вода
       .form-group
         .row
@@ -63,6 +68,10 @@ block content
           label.col-md-1.col-md-offset-0.control-label Тариф
           .col-md-1
             input.form-control.category-title(name='bill.water.tariff_rate', type='text', autocomplete="off", value="#{lastBills.water.tariff_rate}")
+
+          label.col-md-1.col-md-offset-4.control-label Сума
+          .col-md-1
+            input.form-control.category-title(name='bill.water.cost', type='text', autocomplete="off")
 
       label.col-md-offset-1 Свет
       .form-group
@@ -88,12 +97,20 @@ block content
           .col-md-1
             input.form-control.category-title(name='bill.electricity.tariff2_rate', type='text', autocomplete="off", value="#{lastBills.electricity.tariff2_rate}")
 
+          label.col-md-1.col-md-offset-0.control-label Сума
+          .col-md-1
+            input.form-control.category-title(name='bill.electricity.cost', type='text', autocomplete="off")
+
       label.col-md-offset-1 ЖРЕП
       .form-group
         .row
           label.col-md-1.col-md-offset-0.control-label Тариф
           .col-md-1
             input.form-control.category-title(name='bill.communal.tariff_rate', type='text', autocomplete="off", value="#{lastBills.communal.tariff_rate}")
+
+          label.col-md-1.col-md-offset-8.control-label Сума
+          .col-md-1
+            input.form-control.category-title(name='bill.communal.cost', type='text', autocomplete="off")
 
       label.col-md-offset-1 Тепло
       .form-group
@@ -102,12 +119,20 @@ block content
           .col-md-1
             input.form-control.category-title(name='bill.heat.tariff_rate', type='text', autocomplete="off", value="#{lastBills.heat.tariff_rate}")
 
+          label.col-md-1.col-md-offset-8.control-label Сума
+          .col-md-1
+            input.form-control.category-title(name='bill.heat.cost', type='text', autocomplete="off")
+
       label.col-md-offset-1 Интернет
       .form-group
         .row
           label.col-md-1.col-md-offset-0.control-label Тариф
           .col-md-1
             input.form-control.category-title(name='bill.internet.tariff_rate', type='text', autocomplete="off", value="#{lastBills.internet.tariff_rate}")
+
+          label.col-md-1.col-md-offset-8.control-label Сума
+          .col-md-1
+            input.form-control.category-title(name='bill.internet.cost', type='text', autocomplete="off")
 
       label.col-md-offset-1 Гараж
       .form-group
@@ -116,7 +141,17 @@ block content
           .col-md-1
             input.form-control.category-title(name='bill.garage.tariff_rate', type='text', autocomplete="off", value="#{lastBills.garage.tariff_rate}")
 
+          label.col-md-1.col-md-offset-8.control-label Сума
+          .col-md-1
+            input.form-control.category-title(name='bill.garage.cost', type='text', autocomplete="off")
+
 
       .form-group
         button.col-md-2.col-md-offset-1.btn.btn-success.submit-button(type='submit') Готово
         //a.col-md-2.col-md-offset-3.btn.btn-success.next-button.absent(href='/category/create') Далее
+        label.col-md-1.col-md-offset-4.control-label Всего комуналки
+        .col-md-1
+          input.total-comunal.form-control.category-title(type='text', autocomplete="off")
+        label.col-md-1.col-md-offset-1.control-label Всего
+        .col-md-1
+          input.form-control.category-title(name='invoice.total', type='text', autocomplete="off")

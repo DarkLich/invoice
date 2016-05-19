@@ -10,14 +10,14 @@ block content
       if _.size(curr_invoice)
         div
           span title
-          span= curr_invoice.title
+          span(style="margin-left: 10px;")= curr_invoice.title
         div
           span total
-          span= curr_invoice.total
+          span(style="margin-left: 10px;")= curr_invoice.total
       if _.size(invoiceInfo)
         each val, index in invoiceInfo
           div
             span= val.name
-            span= val.cost
+            span(style="margin-left: 10px;")= val.cost
       else
-        a zzzzzzzzzz
+        div

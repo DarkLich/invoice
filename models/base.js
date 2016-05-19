@@ -78,8 +78,8 @@ var query = connection.query('CREATE TABLE IF NOT EXISTS invoices (id INT(11) NO
 function fillFirstInvoice() {
   var invoice = {
     total: 0,
-    title: "2016.01.01",
-    counted_at: moment('2015-12-01').format("YYYY-MM-DD HH:mm:ss")
+    title: "За 2015.11",
+    counted_at: moment('2015-12-23').format("YYYY-MM-DD HH:mm:ss")
   };
   var bills = [
     {
@@ -124,7 +124,7 @@ function fillFirstInvoice() {
       tariff_id: 7,
       invoice_id: 1,
       tariff_rate: 0,
-      cost: 400
+      cost: 0
     }
   ]
   connection.query('SELECT COUNT(*) AS solution FROM invoices', function(err, rows, fields) {
@@ -210,7 +210,7 @@ function addTariff(req, res, next) {
         var tarif2_value = counter_diff - convertToNumber(val.tariff_value);
         if (tarif2_value > 0) {
           counter_diff -= tarif2_value;
-          cost += tarif2_cost * convertToNumber(val.tariff2_rate);
+          cost += tarif2_value * convertToNumber(val.tariff2_rate);
         }
       }
       if (!_.isEmpty(val.tariff_rate)) {
