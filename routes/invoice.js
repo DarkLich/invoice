@@ -28,7 +28,7 @@ router.get('/show/:invoice_id', base.getAllInvoices, base.getInvoice, function(r
   res.render('invoices');
 });
 
-router.post('/create', base.addTariff, function (req, res, next) {
+router.post('/create', base.addInvoice, function (req, res, next) {
   //res.render('invoice_form');
   //res.send({aaaa: res.body})
   console.log ('11111', res)
